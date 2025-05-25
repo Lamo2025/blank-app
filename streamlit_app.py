@@ -1,11 +1,7 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import plotly.graph_objects as go
-import plotly.express as px
 from datetime import datetime
 import time
-
 
 # Seitenkonfiguration
 st.set_page_config(
@@ -167,47 +163,6 @@ def load_css():
         height: 20px;
         border-radius: 10px;
         margin-bottom: 0.5rem;
-    }
-    
-    /* Buttons */
-    .primary-button {
-        background-color: #0d6efd;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    
-    .secondary-button {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    
-    .warning-button {
-        background-color: #ffc107;
-        color: #343a40;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    
-    .danger-button {
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        cursor: pointer;
     }
     
     /* Verstecke Streamlit-Branding */
@@ -413,21 +368,11 @@ def render_revenue_section(data):
             st.markdown(f'<div class="stat-value">{format_revenue(data["revenue"]["warranty"])}</div>', unsafe_allow_html=True)
             st.markdown('<div class="stat-label">Wertgarantie</div>', unsafe_allow_html=True)
         
-        # Umsatzdiagramm
+        # Umsatzdiagramm (vereinfacht mit Streamlit-eigenen Diagrammen)
         df_revenue = pd.DataFrame(data["revenue_history"])
         
-        fig = px.line(df_revenue, x="month", y=["total", "personal"], 
-                     labels={"value": "Umsatz (€)", "variable": "Kategorie"},
-                     color_discrete_map={"total": "#0d6efd", "personal": "#ff9800"})
-        
-        fig.update_layout(
-            legend_title_text="",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            margin=dict(l=0, r=0, t=30, b=0),
-            height=300
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+        # Streamlit-eigenes Liniendiagramm statt Plotly
+        st.line_chart(df_revenue.set_index('month')[['total', 'personal']])
         
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -444,9 +389,7 @@ def render_shop_performance(data):
                 st.markdown(f'<div>{shop["name"]}</div>', unsafe_allow_html=True)
             
             with col2:
-                st.markdown(f'<div style="background-color: #f1f3f4; border-radius: 10px; height: 20px; width: 100%;">'
-                          f'<div style="background-color: {shop["color"]}; border-radius: 10px; height: 20px; width: {shop["performance"]}%"></div>'
-                          f'</div>', unsafe_allow_html=True)
+                st.progress(shop["performance"]/100)
             
             with col3:
                 st.markdown(f'<div>{format_percent(shop["performance"])}</div>', unsafe_allow_html=True)
